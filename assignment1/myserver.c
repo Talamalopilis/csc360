@@ -93,17 +93,19 @@ void *server_action(void *arg) {
     bzero(str, OUTPUT_BUFFER_SIZE);
     read(comm_fd, str, OUTPUT_BUFFER_SIZE);
     operation = parse_request(str, operand);
-    sprintf(result_message, "%s\n", "GET OFF MY LAWN!");
+    
     switch(operation) {
         case REMOVE: 
             value = -1;
             printf("server: REMOVE\n"); 
-            /* TO DO something here for REMOVE */
+            sprintf(result_message, "Removed value: %d\n",
+             remove_from_buffer());
             break;
         case ADD: 
             printf("server: ADD\n"); 
             printf("server: parameter is %s\n", operand);
-            /* TO DO something here for ADD */
+            add_to_buffer(atoi(operand));
+            sprintf(result_message, "Added: %s\n", operand);
             break;
         case SUM: 
             printf("server: SUM\n"); 
