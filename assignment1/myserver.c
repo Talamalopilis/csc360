@@ -111,7 +111,8 @@ void *server_action(void *arg) {
             printf("server: SUM\n"); 
             printf("server: parameter is %s\n", operand);
             int sum = 0;
-            for (int i = 0; i < atoi(operand); i++){
+	    int i;
+            for (i = 0; i < atoi(operand); i++){
             	sum = sum + remove_from_buffer();
             }
             sprintf(result_message, "Sum is: %d\n", sum);
@@ -228,6 +229,6 @@ int main() {
             exit(1);
         }
 
-        printf("Created server thread %d\n", num_threads);
+        printf("Created server thread %d\n", thread_index);
     }
 }
