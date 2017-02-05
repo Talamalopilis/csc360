@@ -110,7 +110,11 @@ void *server_action(void *arg) {
         case SUM: 
             printf("server: SUM\n"); 
             printf("server: parameter is %s\n", operand);
-            /* TO DO something here for SUM */
+            int sum = 0;
+            for (int i = 0; i < atoi(operand); i++){
+            	sum = sum + remove_from_buffer();
+            }
+            sprintf(result_message, "Sum is: %d\n", sum);
             break;
         case DEBUG: 
             printf("server: DEBUG\n"); 
