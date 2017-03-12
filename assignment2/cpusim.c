@@ -52,6 +52,7 @@ void priority_scheduling(void);
 void rr_scheduling(int);
 void run_simulation(int, int);
 void compute_and_print_stats(void);
+int get_min_priority_task(int*, int);
 
 
 /*
@@ -167,7 +168,7 @@ void priority_scheduling()
     int current_tick = 0;
     int current_task = -1;
 
-    while (true){
+    while (1){
     	if (parser >= num_tasks && current_task == -1){
     		break;
     	}
@@ -178,7 +179,7 @@ void priority_scheduling()
     		ready_size++;
     	}
 
-    	int new_task = get_min_priority_task(ready, ready_size)
+    	int new_task = get_min_priority_task(ready, ready_size);
 
     	current_tick++;
     	if (new_task == -1){
