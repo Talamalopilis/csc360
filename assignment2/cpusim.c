@@ -161,10 +161,65 @@ void stride_scheduling(int quantum)
 
 void priority_scheduling()
 {
-    printf("PRIORITY SCHEDULING appears here\n");
-    exit(1);
+    int parser = 0;
+    int ready[num_tasks];
+    int ready_size = 0;
+    int current_tick = 0;
+    int current_task = -1;
+
+    while (true){
+    	if (parser >= num_tasks && current_task == -1){
+    		break;
+    	}
+
+    	while (tasks[parser].arrival_time <= current_tick){
+    		ready[parser] = tasks[parser].priority;
+    		parser++;
+    		ready_size++;
+    	}
+
+    	int new_task = get_min_priority_task(ready, ready_size)
+
+    	current_tick++;
+    	if (new_task == -1){
+    		continue;
+    	}
+    	if (new_task != current_task){
+    		tasks[new_task].dispatches++;
+    		current_task = new_task;
+    	}
+
+    	tasks[current_task].cpu_cycles += 1.0;
+        
+        if (tasks[current_task].cpu_cycles >= tasks[current_task].length) {
+            float quantum_fragment = tasks[current_task].cpu_cycles -
+                tasks[current_task].length;
+            tasks[current_task].cpu_cycles = tasks[current_task].length;
+            tasks[current_task].finish_time = current_tick - quantum_fragment;
+            
+            ready[current_task] = PRIORITY_LEVELS + 1; //completed
+            int next_task = get_min_priority_task(ready, ready_size);
+            if (next_task != -1){
+            	tasks[next_task].cpu_cycles += quantum_fragment;
+            }
+    }
 }
 
+int get_min_priority_task(int* ready, int ready_size){
+	int min = PRIORITY_LEVELS + 1;
+	int index = 0;
+	int i;
+	for (i = 0; i < ready_size; i++){
+		if (ready[i] < min){
+			index = i;
+			min = ready[i];
+		}
+	}
+	if (min == PRIORITY_LEVELS + 1){
+		return -1;
+	}
+	return index;
+}
 
 
 void rr_scheduling(int quantum)
