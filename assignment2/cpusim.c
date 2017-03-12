@@ -185,6 +185,7 @@ void priority_scheduling()
 
     	current_tick++;
     	if (new_task == -1){
+    		current_task = new_task;
     		continue;
     	}
     	if (new_task != current_task){
