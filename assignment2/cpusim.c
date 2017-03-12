@@ -227,8 +227,67 @@ int get_min_priority_task(int* ready, int ready_size){
 
 void rr_scheduling(int quantum)
 {
-    printf("RR SCHEDULING appears here\n");
-    exit(1);
+    int parser = 0;
+    int ready[num_tasks];
+    int ready_size = 0;
+    int current_tick = 0;
+    int current_task = -1;
+
+    while (1){
+    	if (parser >= num_tasks && current_task == -1){
+    		break;
+    	}
+
+    	while (tasks[parser].arrival_time <= current_tick && parser < num_tasks){
+    		ready[parser] = 1;
+    		parser++;
+    		ready_size++;
+    	}
+
+    	int new_task = get_next_available_task(ready, ready_size, current_task);
+
+    	current_tick += quantum;
+    	if (new_task == -1){
+    		current_task = new_task;
+    		continue;
+    	}
+    	if (new_task != current_task){
+    		tasks[new_task].dispatches++;
+    		current_task = new_task;
+    	}
+
+    	tasks[current_task].cpu_cycles += quantum;
+        
+        if (tasks[current_task].cpu_cycles >= tasks[current_task].length) {
+            float quantum_fragment = tasks[current_task].cpu_cycles -
+                tasks[current_task].length;
+            tasks[current_task].cpu_cycles = tasks[current_task].length;
+            tasks[current_task].finish_time = current_tick - quantum_fragment;
+            
+            ready[current_task] = 0; //completed
+            int next_task = get_next_available_task(ready, ready_size, current_task);
+            if (next_task != -1){
+            	tasks[next_task].cpu_cycles += quantum_fragment;
+            }
+        }
+    }
+}
+
+int get_next_available_task(int* ready, int ready_size, int current_task){
+	int any = 0;
+	int index = 0;
+	int i;
+	for (i = 0; i < ready_size; i++){
+		if (ready[(current_task + i + 1) % ready_size] == 1){
+			index = (current_task + i + 1) % ready_size;
+			any = 1;
+			break;
+		}
+	}
+	if (!any){
+		return -1;
+	}
+	return index;
 }
 
 
