@@ -203,6 +203,7 @@ void priority_scheduling()
             if (next_task != -1){
             	tasks[next_task].cpu_cycles += quantum_fragment;
             }
+        }
     }
 }
 
