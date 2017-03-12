@@ -53,6 +53,7 @@ void rr_scheduling(int);
 void run_simulation(int, int);
 void compute_and_print_stats(void);
 int get_min_priority_task(int*, int);
+int get_next_available_task(int*, int, int);
 
 
 /*
