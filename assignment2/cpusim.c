@@ -169,11 +169,13 @@ void priority_scheduling()
     int current_task = -1;
 
     while (1){
+    	printf("start loop ");
+    	printf("%d %d %d\n", parser, current_task, current_tick);
     	if (parser >= num_tasks && current_task == -1){
     		break;
     	}
 
-    	while (tasks[parser].arrival_time <= current_tick){
+    	while (tasks[parser].arrival_time <= current_tick && parser < num_tasks){
     		ready[parser] = tasks[parser].priority;
     		parser++;
     		ready_size++;
