@@ -169,8 +169,6 @@ void priority_scheduling()
     int current_task = -1;
 
     while (1){
-    	printf("start loop ");
-    	printf("%d %d %d\n", parser, current_task, current_tick);
     	if (parser >= num_tasks && current_task == -1){
     		break;
     	}
@@ -196,7 +194,6 @@ void priority_scheduling()
     	tasks[current_task].cpu_cycles += 1.0;
         
         if (tasks[current_task].cpu_cycles >= tasks[current_task].length) {
-        	printf("Im done\n");
             float quantum_fragment = tasks[current_task].cpu_cycles -
                 tasks[current_task].length;
             tasks[current_task].cpu_cycles = tasks[current_task].length;
@@ -216,7 +213,6 @@ int get_min_priority_task(int* ready, int ready_size){
 	int index = 0;
 	int i;
 	for (i = 0; i < ready_size; i++){
-		printf("min calc %d\n", ready[i]);
 		if (ready[i] < min){
 			index = i;
 			min = ready[i];
