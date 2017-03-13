@@ -58,6 +58,10 @@ int get_min_priority_task(int*, int, int);
 int set_state_ps(int);
 int get_next_rr_task(int*, int, int);
 int set_state_rr(int);
+int get_min_stride_task(int*, int, int);
+int set_state_st(int);
+int calculate_stride(int);
+void reset_stride(int*, int);
 
 
 
@@ -157,14 +161,61 @@ void first_come_first_serve()
     }
 }
 
-
+int current_pass = 0; //global pass to make things fit easier
 void stride_scheduling(int quantum)
 {
-    printf("STRIDE SCHEDULING appears here\n");
-    exit(1);
+    simulate(get_min_stride_task, quantum, set_state_st);
 }
 
+int get_min_stride_task(int* ready, int ready_size, int current_task){
+	int min = ready[current_task];
+	if (min < -1){
+		//overflowed
+		reset_stride(ready, ready_size);
+	}
+	int index = 0;
+	int i;
+	for(i = 0; i < ready_size; i++){
+		if (ready[i] != -1){
+			if (min == -1 || ready[i] < min){
+				index = i;
+				min = ready[i];
+			}
+		}
+	}
+	if (min == -1){
+		return -1;
+	}
+	current_pass = ready[index];
+	ready[index] += calculate_stride(index);
+	return index;
+}
 
+int set_state_st(int task){
+	if (task < 0){
+		return -1;
+	}
+	else{
+		return current_pass + calculate_stride(task);
+	}
+}
+
+int calculate_stride(int task){
+	int i;
+	int sum_tickets = 0;
+	for (i = 0; i < num_tasks; i++){
+		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority) * 2)
+	}
+	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority) * 2)
+}
+
+void reset_stride(int* ready, int ready_size){
+	int i;
+	current_pass = 0;
+	for (i = 0; i < ready_size; i++){
+		ready[i] = calculate_stride(i);
+	}
+}
 
 void priority_scheduling()
 {
