@@ -53,7 +53,7 @@ void rr_scheduling(int);
 void run_simulation(int, int);
 void compute_and_print_stats(void);
 int get_min_priority_task(int*, int);
-int get_next_available_task(int*, int, int);
+int get_next_rr_task(int*, int, int);
 
 
 /*
@@ -228,7 +228,38 @@ int get_min_priority_task(int* ready, int ready_size){
 
 void rr_scheduling(int quantum)
 {
-    int parser = 0;
+    simulate(get_next_rr_task, quantum, set_state_rr);
+}
+
+
+int get_next_rr_task(int* ready, int ready_size, int current_task){
+	int any = 0;
+	int index = 0;
+	int i;
+	for (i = 0; i < ready_size; i++){
+		if (ready[(current_task + i + 1) % ready_size] == 1){
+			index = (current_task + i + 1) % ready_size;
+			any = 1;
+			break;
+		}
+	}
+	if (!any){
+		return -1;
+	}
+	return index;
+}
+
+int set_state_rr(int task){
+	if (task < 0){
+		return 0;
+	}
+	else{
+		return 1;
+	}
+}
+
+void simulate(int (*get_next_task)(int*, int, int), int quantum, int (*set_state)(int)){
+	int parser = 0;
     int ready[num_tasks];
     int ready_size = 0;
     int current_tick = 0;
@@ -240,12 +271,12 @@ void rr_scheduling(int quantum)
     	}
 
     	while (tasks[parser].arrival_time <= current_tick && parser < num_tasks){
-    		ready[parser] = 1;
+    		ready[parser] = (*set_state)(parser);
     		parser++;
     		ready_size++;
     	}
 
-    	int new_task = get_next_available_task(ready, ready_size, current_task);
+    	int new_task = (*get_next_task)(ready, ready_size, current_task);
 
     	current_tick += quantum;
     	if (new_task == -1){
@@ -265,32 +296,14 @@ void rr_scheduling(int quantum)
             tasks[current_task].cpu_cycles = tasks[current_task].length;
             tasks[current_task].finish_time = current_tick - quantum_fragment;
             
-            ready[current_task] = 0; //completed
-            int next_task = get_next_available_task(ready, ready_size, current_task);
+            ready[current_task] = (*set_state)(-1); //completed
+            int next_task = (*get_next_task)(ready, ready_size, current_task);
             if (next_task != -1){
             	tasks[next_task].cpu_cycles += quantum_fragment;
             }
         }
     }
 }
-
-int get_next_available_task(int* ready, int ready_size, int current_task){
-	int any = 0;
-	int index = 0;
-	int i;
-	for (i = 0; i < ready_size; i++){
-		if (ready[(current_task + i + 1) % ready_size] == 1){
-			index = (current_task + i + 1) % ready_size;
-			any = 1;
-			break;
-		}
-	}
-	if (!any){
-		return -1;
-	}
-	return index;
-}
-
 
 void run_simulation(int algorithm, int quantum)
 {
