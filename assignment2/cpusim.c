@@ -52,8 +52,12 @@ void priority_scheduling(void);
 void rr_scheduling(int);
 void run_simulation(int, int);
 void compute_and_print_stats(void);
+
+void simulate(int (*get_next_task)(int*, int, int), int quantum, int (*set_state)(int));
 int get_min_priority_task(int*, int);
 int get_next_rr_task(int*, int, int);
+int set_state_rr(int);
+
 
 
 /*
