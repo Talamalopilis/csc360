@@ -301,7 +301,7 @@ int get_shortest_task(int* ready, int ready_size, int current_task){
 			}
 		}
 	}
-	if (min = -1){
+	if (min == -1){
 		return -1;
 	}
 	return index;
