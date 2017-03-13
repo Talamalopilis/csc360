@@ -17,6 +17,7 @@
 #define PS   1
 #define RR 2
 #define STRIDE 3
+#define SJF 4
 
 #define PRIORITY_LEVELS 4
 
@@ -50,6 +51,7 @@ void first_come_first_serve(void);
 void stride_scheduling(int);
 void priority_scheduling(void);
 void rr_scheduling(int);
+void shortest_job_scheduling(void);
 void run_simulation(int, int);
 void compute_and_print_stats(void);
 
@@ -62,6 +64,8 @@ int get_min_stride_task(int*, int, int);
 int set_state_st(int);
 int calculate_stride(int);
 void reset_stride(int*, int);
+int get_shortest_task(int*, int, int);
+
 
 
 
@@ -205,9 +209,9 @@ int calculate_stride(int task){
 	int i;
 	int sum_tickets = 0;
 	for (i = 0; i < num_tasks; i++){
-		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority));// * (PRIORITY_LEVELS - tasks[i].priority));
+		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority) * (PRIORITY_LEVELS - tasks[i].priority));
 	}
-	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority));// * (PRIORITY_LEVELS - tasks[task].priority));
+	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority) * (PRIORITY_LEVELS - tasks[task].priority));
 }
 
 void reset_stride(int* ready, int ready_size){
@@ -281,6 +285,28 @@ int set_state_rr(int task){
 	}
 }
 
+void shortest_job_scheduling(){
+	simulate(get_shortest_task, 1, set_state_rr);
+}
+
+int get_shortest_task(int* ready, int ready_size, int current_task){
+	int min = -1;
+	int index = 0;
+	int i;
+	for(i = 0; i < ready_size; i++){
+		if (ready[i]){
+			if (min == -1 || tasks[i].length - tasks[i].cpu_cycles < min){
+				index = i;
+				min = tasks[i].length - tasks[i].cpu_cycles;
+			}
+		}
+	}
+	if (min = -1){
+		return -1;
+	}
+	return index;
+}
+
 void simulate(int (*get_next_task)(int*, int, int), int quantum, int (*set_state)(int)){
 	int parser = 0;
     int ready[num_tasks];
@@ -340,6 +366,9 @@ void run_simulation(int algorithm, int quantum)
         case RR:
             rr_scheduling(quantum);
             break;
+        case SJF:
+        	shortest_job_scheduling();
+        	break;
         case FCFS:
         default:
             first_come_first_serve();
@@ -407,6 +436,8 @@ int main(int argc, char *argv[])
                 algorithm = RR;
             } else if (strcmp(argv[i], "STRIDE") == 0) {
                 algorithm = STRIDE;
+            } else if (strcmp(argv[i], "SJF") == 0) {
+                algorithm = SJF;
             }
         }
     }
