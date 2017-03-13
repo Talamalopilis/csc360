@@ -168,11 +168,7 @@ void stride_scheduling(int quantum)
 }
 
 int get_min_stride_task(int* ready, int ready_size, int current_task){
-	int min = ready[current_task];
-	if (min < -1){
-		//overflowed
-		reset_stride(ready, ready_size);
-	}
+	int min = -1;
 	int index = 0;
 	int i;
 	for(i = 0; i < ready_size; i++){
@@ -182,6 +178,11 @@ int get_min_stride_task(int* ready, int ready_size, int current_task){
 				min = ready[i];
 			}
 		}
+	}
+	if (min < -1){
+		//overflowed
+		reset_stride(ready, ready_size);
+		return get_min_stride_task(ready, ready_size, current_task);
 	}
 	if (min == -1){
 		return -1;
@@ -204,9 +205,9 @@ int calculate_stride(int task){
 	int i;
 	int sum_tickets = 0;
 	for (i = 0; i < num_tasks; i++){
-		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority) * 2);
+		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority) * (PRIORITY_LEVELS - tasks[i].priority));
 	}
-	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority) * 2);
+	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority) * (PRIORITY_LEVELS - tasks[task].priority));
 }
 
 void reset_stride(int* ready, int ready_size){
