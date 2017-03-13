@@ -205,9 +205,9 @@ int calculate_stride(int task){
 	int i;
 	int sum_tickets = 0;
 	for (i = 0; i < num_tasks; i++){
-		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority) * (PRIORITY_LEVELS - tasks[i].priority));
+		sum_tickets += ((PRIORITY_LEVELS - tasks[i].priority));// * (PRIORITY_LEVELS - tasks[i].priority));
 	}
-	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority) * (PRIORITY_LEVELS - tasks[task].priority));
+	return sum_tickets / ((PRIORITY_LEVELS - tasks[task].priority));// * (PRIORITY_LEVELS - tasks[task].priority));
 }
 
 void reset_stride(int* ready, int ready_size){
