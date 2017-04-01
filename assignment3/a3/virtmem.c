@@ -224,7 +224,9 @@ long get_p_address_CLOCK(long page){
     page_table[clock].dirty = 0;
     swap_ins++;
     swap_outs++;
-    return clock;
+    i = clock;
+    clock = (clock + 1) % size_of_memory;
+    return i;
 }
 
 
