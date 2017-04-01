@@ -293,7 +293,7 @@ int get_shortest_task(int* ready, int ready_size, int current_task){
 	int min = -1;
 	int index = 0;
 	int i;
-	for(i = 0; i < ready_size; i++){
+	for (i = 0; i < ready_size; i++){
 		if (ready[i]){
 			if (min == -1 || tasks[i].length - tasks[i].cpu_cycles < min){
 				index = i;
