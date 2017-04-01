@@ -385,7 +385,7 @@ int main(int argc, char **argv)
                 page_replacement_scheme = REPLACE_LRU;
             } else if (strcmp(s, "clock") == 0) {
                 page_replacement_scheme = REPLACE_CLOCK;
-            } else if (strcmp(s, "lru") == 0) {
+            } else if (strcmp(s, "lfu") == 0) {
                 page_replacement_scheme = REPLACE_LFU;
             } else if (strcmp(s, "optimal") == 0) {
                 page_replacement_scheme = REPLACE_OPTIMAL;
