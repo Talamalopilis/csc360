@@ -90,6 +90,7 @@ int clock = 0;
 
 long resolve_address(long logical, int memwrite)
 {
+    int i;
     long page, frame;
     long offset;
     long mask = 0;
