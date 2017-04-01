@@ -20,6 +20,7 @@
 #define REPLACE_LRU  2
 #define REPLACE_CLOCK 3
 #define REPLACE_OPTIMAL 4
+#define REPLACE_LFU 5
 
 
 #define TRUE 1
@@ -40,6 +41,7 @@ void error_resolve_address(long, int);
 long get_p_address_FIFO(long page);
 long get_p_address_LRU(long page);
 long get_p_address_CLOCK(long page);
+long get_p_address_LFU(long page);
 
 
 /*
@@ -115,6 +117,8 @@ long resolve_address(long logical, int memwrite)
         case REPLACE_CLOCK:
             frame = get_p_address_CLOCK(page);
             break;
+        case REPLACE_LFU:
+            frame = get_p_address_LFU(page);
     }
 
     if (frame != -1) {
@@ -227,6 +231,40 @@ long get_p_address_CLOCK(long page){
     i = clock;
     clock = (clock + 1) % size_of_memory;
     return i;
+}
+
+long get_p_address_LFU(long page){
+    int i;
+    for (i = 0; i < size_of_memory; i++) {
+        if (!page_table[i].free && page_table[i].page_num == page) {
+            page_table[i].last_used++;
+            return i;
+        }
+    }
+
+    page_faults++;
+
+    for (i = 0; i < size_of_memory; i++) {
+        if (page_table[i].free) {
+            page_table[i].page_num = page;
+            page_table[i].free = FALSE;
+            return i;
+        }
+    }
+
+    int min = -1;
+    int index = -1;
+    for (i = 0; i < size_of_memory; i++){
+        if (page_table[i].last_used < min || min == -1){
+            min = page_table[i].last_used;
+            index = i;
+        }
+    }
+    page_table[index].page_num = page;
+    page_table[index].last_used = 0;
+    swap_ins++;
+    swap_outs++;
+    return index;
 }
 
 
@@ -347,6 +385,8 @@ int main(int argc, char **argv)
                 page_replacement_scheme = REPLACE_LRU;
             } else if (strcmp(s, "clock") == 0) {
                 page_replacement_scheme = REPLACE_CLOCK;
+            } else if (strcmp(s, "lru") == 0) {
+                page_replacement_scheme = REPLACE_LFU;
             } else if (strcmp(s, "optimal") == 0) {
                 page_replacement_scheme = REPLACE_OPTIMAL;
             } else {
